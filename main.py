@@ -14,20 +14,23 @@ FPS = 60
 
 clock = pg.time.Clock()
 
-#TODO: finish shooting for player (invert bullet direction if player is flipped)
-#TODO: make crosshair
+pg.mouse.set_visible(False)
 
 class Player(pg.sprite.Sprite):
     def __init__(self):
         super().__init__()
 
-        self.width = 125
-        self.height = 125
+        self.width = 100
+        self.height = 100
 
-        self.move_x = 5
-        self.move_y = 5
+        self.health = 5
+
+        self.move_x = 7
+        self.move_y = 7
 
         self.flipped = False
+
+        self.space_down = False
 
         self.run_list = []
         self.run_list.append(pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "player", "run", "run_1.png")))
@@ -50,7 +53,6 @@ class Player(pg.sprite.Sprite):
         self.image = pg.transform.scale(self.idle_list[self.idle_index], (self.width, self.height))
         self.rect = self.image.get_rect(center = (WIDTH//2, HEIGHT//2))
 
-
     def idle_animation(self):
         if self.flipped == False:
             self.idle_index += self.idle_animation_speed
@@ -64,7 +66,6 @@ class Player(pg.sprite.Sprite):
                 self.idle_index = 0
 
             self.image = pg.transform.flip(pg.transform.scale(self.idle_list[int(self.idle_index)], (self.width, self.height)), True, False)
-
 
     def run_animation(self):
         key = pg.key.get_pressed()
@@ -128,11 +129,14 @@ class Player(pg.sprite.Sprite):
     
     def shoot(self):
         key = pg.key.get_pressed()
-        if key[pg.K_SPACE] and not self.flipped:
-            bullet_group.add(Bullet(self.rect.midright))
-        if key[pg.K_SPACE] and self.flipped:
-            bullet_group.add(Bullet(self.rect.midleft))
-
+        if key[pg.K_SPACE]:
+            self.space_down = True
+        elif self.space_down:
+            if not self.flipped:
+                bullet_group.add(Bullet(self.rect.midright, self.flipped))
+            else:
+                bullet_group.add(Bullet(self.rect.midleft, self.flipped))
+            self.space_down = False
 
     def update(self):
         self.shoot()
@@ -141,11 +145,42 @@ class Player(pg.sprite.Sprite):
         self.run_animation()     
         self.movement()      	
 
-player = pg.sprite.GroupSingle()
-player.add(Player())    
+player = pg.sprite.GroupSingle(Player())
+    
+
+class Crosshair(pg.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image = pg.Surface((10,10), pg.SRCALPHA)
+        self.rect = self.image.get_rect()
+
+        self.image.fill((0, 0, 0, 0))
+
+    def follow_cursor(self):
+        self.rect.center = pg.mouse.get_pos()
+
+    def update(self):
+        self.follow_cursor()
+    
+crosshair = pg.sprite.GroupSingle(Crosshair())
+
+# almost same class but another sprite for the mouse (picture you actually see)
+class CrosshairPicture(pg.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image = pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "ui", "crosshair_sourrounding.png"))
+        self.rect = self.image.get_rect()
+
+    def follow_cursor(self):
+        self.rect.center = pg.mouse.get_pos()
+    
+    def update(self):
+        self.follow_cursor()
+
+crosshair_picture = pg.sprite.GroupSingle(CrosshairPicture())
 
 class Bullet(pg.sprite.Sprite):
-    def __init__(self, player_pos):
+    def __init__(self, player_pos, player_flipped):
         super().__init__()
         self.image = pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "flying_bullet.png"))
         self.rect = self.image.get_rect()
@@ -154,13 +189,19 @@ class Bullet(pg.sprite.Sprite):
 
         self.rect.center = (player_pos)
 
+        self.direction = player_flipped
+
     def move(self):
-        self.rect.x += self.bullet_speed    
+        if self.direction == False:
+            self.rect.x += self.bullet_speed    
+        else:
+            self.rect.x -= self.bullet_speed
+
         if self.rect.left >= WIDTH or self.rect.right <= 0:
             self.kill()
 
     def update(self):
-        self.move()
+        self.move() 
 
 bullet_group = pg.sprite.Group()
 
@@ -179,6 +220,11 @@ while True:
     
     player.draw(screen)
     player.update()
+
+    crosshair.draw(screen)
+    crosshair.update()
+    crosshair_picture.draw(screen)
+    crosshair_picture.update()
 
     bullet_group.draw(screen)
     bullet_group.update()
