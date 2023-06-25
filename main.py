@@ -129,7 +129,7 @@ class Player(pg.sprite.Sprite):
     def shoot(self):
          key = pg.key.get_pressed()
          if key[pg.K_SPACE]:
-             bullet_group.add(Bullet((self.rect.center)))
+             bullet_group.add(Bullet(self.rect.right, self.rect.bottom))
 
     def update(self):
         self.shoot()
@@ -142,14 +142,14 @@ player = pg.sprite.GroupSingle()
 player.add(Player())    
 
 class Bullet(pg.sprite.Sprite):
-    def __init__(self, center):
+    def __init__(self, x_pos, y_pos):
         super().__init__()
         self.image = pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "flying_bullet.png"))
         self.rect = self.image.get_rect()
         
         self.bullet_speed = 10
 
-        self.rect.center = (center) 
+        self.rect.center = (x_pos, y_pos) 
 
     def move(self):
         self.rect.x += self.bullet_speed    
