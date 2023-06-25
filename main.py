@@ -127,9 +127,12 @@ class Player(pg.sprite.Sprite):
             self.rect.top = 0
     
     def shoot(self):
-         key = pg.key.get_pressed()
-         if key[pg.K_SPACE]:
-             bullet_group.add(Bullet(self.rect.right, self.rect.bottom))
+        key = pg.key.get_pressed()
+        if key[pg.K_SPACE] and not self.flipped:
+            bullet_group.add(Bullet(self.rect.midright))
+        if key[pg.K_SPACE] and self.flipped:
+            bullet_group.add(Bullet(self.rect.midleft))
+
 
     def update(self):
         self.shoot()
@@ -142,14 +145,14 @@ player = pg.sprite.GroupSingle()
 player.add(Player())    
 
 class Bullet(pg.sprite.Sprite):
-    def __init__(self, x_pos, y_pos):
+    def __init__(self, player_pos):
         super().__init__()
         self.image = pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "flying_bullet.png"))
         self.rect = self.image.get_rect()
         
         self.bullet_speed = 10
 
-        self.rect.center = (x_pos, y_pos) 
+        self.rect.center = (player_pos)
 
     def move(self):
         self.rect.x += self.bullet_speed    
@@ -167,6 +170,10 @@ while True:
         if event.type == pg.QUIT:
             pg.quit()
             exit()
+        if event.type == pg.KEYDOWN and pg.K_ESCAPE:
+            if event.key == pg.K_ESCAPE:
+                pg.quit()
+                exit()                
 
     screen.fill("white")
     
