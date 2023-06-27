@@ -16,6 +16,12 @@ clock = pg.time.Clock()
 
 pg.mouse.set_visible(False)
 
+print(WIDTH, HEIGHT)
+
+#TODO: split screen in grid to make levels easier
+#TODO: start to create levels with level data 
+#TODO: implement life bar
+
 class Player(pg.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -205,6 +211,35 @@ class Bullet(pg.sprite.Sprite):
 
 bullet_group = pg.sprite.Group()
 
+class Level():
+    def __init__(self, level_data):
+        self.left_wall = pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "tiles", "left_wall.png"))
+        self.right_wall = pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "tiles", "right_wall.png"))
+        self.upper_wall = pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "tiles", "upper_wall.png"))
+        self.downer_wall = pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "tiles", "downer_wall.png"))
+        self.corner = pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "tiles", "corner.png"))
+
+level_data = [
+    # insert level data here
+]
+
+level = Level(level_data)
+
+# experimental things
+corner = pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "tiles", "corner.png"))
+temp = pg.image.load(os.path.join("OneDrive", "Desktop", "test.png")).convert_alpha()
+surf = pg.Surface((80, 80))
+
+def test():
+    x_pos = 80
+    y_pos = 80
+    for _ in range(15):
+        pg.draw.line(screen, "black", (x_pos, 0), (x_pos, HEIGHT))
+        x_pos += 80
+    for _ in range(8):
+        pg.draw.line(screen, "black", (0, y_pos), (WIDTH, y_pos))
+        y_pos += 80
+
 
 while True:
     for event in pg.event.get():
@@ -228,6 +263,11 @@ while True:
 
     bullet_group.draw(screen)
     bullet_group.update()
+
+    # experimental
+    test()
+    #surf.blit(corner, (0,0))
+    screen.blit(corner, (0,0))
 
     pg.display.update()
     clock.tick(FPS)

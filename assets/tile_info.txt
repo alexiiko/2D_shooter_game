@@ -1,0 +1,5 @@
+16 squares wide
+
+8 squares long
+
+one square = 80x80
