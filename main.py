@@ -16,28 +16,13 @@ clock = pg.time.Clock()
 
 pg.mouse.set_visible(False)
 
-print(WIDTH, HEIGHT)
 
-#TODO: split screen in grid to make levels easier
 #TODO: start to create levels with level data 
 #TODO: implement life bar
 
 class Player(pg.sprite.Sprite):
     def __init__(self):
         super().__init__()
-
-        self.width = 100
-        self.height = 100
-
-        self.health = 5
-
-        self.move_x = 7
-        self.move_y = 7
-
-        self.flipped = False
-
-        self.space_down = False
-
         self.run_list = []
         self.run_list.append(pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "player", "run", "run_1.png")))
         self.run_list.append(pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "player", "run", "run_2.png")))
@@ -55,6 +40,21 @@ class Player(pg.sprite.Sprite):
         self.idle_list.append(pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "player", "idle", "idle_5.png")))
         self.idle_index = 0
         self.idle_animation_speed = 0.05
+
+        self.width = 100
+        self.height = 100
+
+        self.health = 5
+
+        self.dx = 5
+        self.dy = 5
+
+        self.accerleration = 7
+
+        self.flipped = False
+
+        self.space_down = False
+
 
         self.image = pg.transform.scale(self.idle_list[self.idle_index], (self.width, self.height))
         self.rect = self.image.get_rect(center = (WIDTH//2, HEIGHT//2))
@@ -115,13 +115,20 @@ class Player(pg.sprite.Sprite):
     def movement(self):
         key = pg.key.get_pressed()
         if key[pg.K_d]:
-            self.rect.x += self.move_x
+            self.rect.x += self.accerleration
         if key[pg.K_a]:
-            self.rect.x -= self.move_x
+            self.rect.x-= self.accerleration
         if key[pg.K_w]:
-            self.rect.y -= self.move_y
+            self.rect.y -= self.accerleration
         if key[pg.K_s]:
-            self.rect.y += self.move_y
+            self.rect.y += self.accerleration
+
+    def collision_with_tiles(self):
+        for tile in level.tile_list:    
+            if tile[1].colliderect(self.rect.x + self.dx, self.rect.y, self.width, self.height):
+                self.accerleration = 0
+            if tile[1].colliderect(self.rect.x, self.rect.y + self.dy, self.width, self.height):
+                self.accerleration = 0
 
     def border(self):
         if self.rect.left <= 0:
@@ -144,12 +151,15 @@ class Player(pg.sprite.Sprite):
                 bullet_group.add(Bullet(self.rect.midleft, self.flipped))
             self.space_down = False
 
+            
+
     def update(self):
+        self.collision_with_tiles()      	
+        self.movement()
         self.shoot()
         self.border()
         self.idle_animation()
         self.run_animation()     
-        self.movement()      	
 
 player = pg.sprite.GroupSingle(Player())
     
@@ -213,33 +223,130 @@ bullet_group = pg.sprite.Group()
 
 class Level():
     def __init__(self, level_data):
-        self.left_wall = pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "tiles", "left_wall.png"))
-        self.right_wall = pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "tiles", "right_wall.png"))
-        self.upper_wall = pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "tiles", "upper_wall.png"))
-        self.downer_wall = pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "tiles", "downer_wall.png"))
-        self.corner = pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "tiles", "corner.png"))
+        '''
+        upper_wall = 0
+        left_wall = 1
+        right_wall = 2
+        downer_wall = 3
+        upright_corner = 4
+        downright_corner = 5
+        upleft_corner = 6
+        downleft_corner = 7
+
+        blank = 8
+        '''
+        self.tile_list = []
+
+        left_wall = pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "tiles", "left_wall.png"))
+        right_wall = pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "tiles", "right_wall.png"))
+        upper_wall = pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "tiles", "upper_wall.png"))
+        downer_wall = pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "tiles", "downer_wall.png"))
+        
+        corner = pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "tiles", "corner.png"))
+        upright_corner = pg.transform.rotate(pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "tiles", "corner.png")), 270)
+        downright_corner = pg.transform.rotate(pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "tiles", "corner.png")), 360)
+        upleft_corner = pg.transform.rotate(pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "tiles", "corner.png")), 180)
+        downleft_corner = pg.transform.rotate(pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "tiles", "corner.png")), 90)
+
+        row_counter = 0
+        for row in level_data:
+            column_counter = 0
+            for column in row:
+                if column == 0:
+                    image = upper_wall
+                    image_rect = image.get_rect()
+
+                    image_rect.x = column_counter * 80
+                    image_rect.y = row_counter * 80
+
+                    tile = (image, image_rect)
+                    self.tile_list.append(tile)
+                if column == 1:
+                    image = left_wall
+                    image_rect = image.get_rect()
+
+                    image_rect.x = column_counter * 80
+                    image_rect.y = row_counter * 80
+
+                    tile = (image, image_rect)
+                    self.tile_list.append(tile)
+                if column == 2:
+                    image = right_wall
+                    image_rect = image.get_rect()
+
+                    image_rect.x = column_counter * 80
+                    image_rect.y = row_counter * 80
+
+                    tile = (image, image_rect)
+                    self.tile_list.append(tile)
+                if column == 3:
+                    image = downer_wall
+                    image_rect = image.get_rect()
+
+                    image_rect.x = column_counter * 80
+                    image_rect.y = row_counter * 80
+
+                    tile = (image, image_rect)
+                    self.tile_list.append(tile)
+                if column == 4:
+                    image = upright_corner
+                    image_rect = image.get_rect()
+
+                    image_rect.x = column_counter * 80
+                    image_rect.y = row_counter * 80
+
+                    tile = (image, image_rect)
+                    self.tile_list.append(tile)
+                if column == 5:
+                    image = downright_corner
+                    image_rect = image.get_rect()
+
+                    image_rect.x = column_counter * 80
+                    image_rect.y = row_counter * 80
+
+                    tile = (image, image_rect)
+                    self.tile_list.append(tile)
+                if column == 6:
+                    image = upleft_corner
+                    image_rect = image.get_rect()
+
+                    image_rect.x = column_counter * 80
+                    image_rect.y = row_counter * 80
+
+                    tile = (image, image_rect)
+                    self.tile_list.append(tile)
+                if column == 7:
+                    image = downleft_corner
+                    image_rect = image.get_rect()
+
+                    image_rect.x = column_counter * 80
+                    image_rect.y = row_counter * 80
+
+                    tile = (image, image_rect)
+                    self.tile_list.append(tile)
+                    
+                column_counter += 1
+            row_counter += 1
+        
+    def draw_tiles(self):
+        for sprite in self.tile_list:
+            screen.blit(sprite[0], sprite[1])
+
+
 
 level_data = [
-    # insert level data here
+    [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6],
+    [1,8,8,8,8,8,8,8,8,8,8,8,8,8,8,2],
+    [1,8,8,8,8,8,8,8,8,8,8,8,8,8,8,2],
+    [1,8,8,8,8,8,8,8,8,8,8,8,8,8,8,2],
+    [1,8,8,8,8,8,8,8,8,8,8,8,8,8,8,2],
+    [1,8,8,8,8,8,8,8,8,8,8,8,8,8,8,2],
+    [1,8,8,8,8,8,8,8,8,8,8,8,8,8,8,2],
+    [1,8,8,8,8,8,8,8,8,8,8,8,8,8,8,2],
+    [5,3,3,3,3,3,3,3,3,3,3,3,3,3,3,7]
 ]
 
 level = Level(level_data)
-
-# experimental things
-corner = pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "tiles", "corner.png"))
-temp = pg.image.load(os.path.join("OneDrive", "Desktop", "test.png")).convert_alpha()
-surf = pg.Surface((80, 80))
-
-def test():
-    x_pos = 80
-    y_pos = 80
-    for _ in range(15):
-        pg.draw.line(screen, "black", (x_pos, 0), (x_pos, HEIGHT))
-        x_pos += 80
-    for _ in range(8):
-        pg.draw.line(screen, "black", (0, y_pos), (WIDTH, y_pos))
-        y_pos += 80
-
 
 while True:
     for event in pg.event.get():
@@ -251,8 +358,10 @@ while True:
                 pg.quit()
                 exit()                
 
-    screen.fill("white")
-    
+    screen.fill("#6584AA")
+
+    level.draw_tiles()
+
     player.draw(screen)
     player.update()
 
@@ -263,11 +372,6 @@ while True:
 
     bullet_group.draw(screen)
     bullet_group.update()
-
-    # experimental
-    test()
-    #surf.blit(corner, (0,0))
-    screen.blit(corner, (0,0))
 
     pg.display.update()
     clock.tick(FPS)
