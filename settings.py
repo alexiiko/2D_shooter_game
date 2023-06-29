@@ -1,7 +1,9 @@
 import pygame as pg
+import os
 
 screen = pg.display.set_mode((0,0), pg.FULLSCREEN)
-pg.display.set_caption('Shooter Game')
+pg.display.set_caption("Shooter Game")
+pg.display.set_icon(pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "player", "idle", "idle_1.png")))
 
 screen_info = pg.display.Info()
 
