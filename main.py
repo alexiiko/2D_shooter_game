@@ -21,43 +21,6 @@ pg.mouse.set_visible(False)
 #TODO: implement life bar
 
 class Player(pg.sprite.Sprite):
-    def __init__(self):
-        super().__init__()
-        self.run_list = []
-        self.run_list.append(pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "player", "run", "run_1.png")))
-        self.run_list.append(pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "player", "run", "run_2.png")))
-        self.run_list.append(pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "player", "run", "run_3.png")))
-        self.run_list.append(pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "player", "run", "run_4.png")))
-        self.run_list.append(pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "player", "run", "run_5.png")))
-        self.run_index = 0
-        self.run_animation_speed = 0.1
-
-        self.idle_list = []
-        self.idle_list.append(pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "player", "idle", "idle_1.png")))
-        self.idle_list.append(pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "player", "idle", "idle_2.png")))
-        self.idle_list.append(pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "player", "idle", "idle_3.png")))
-        self.idle_list.append(pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "player", "idle", "idle_4.png")))
-        self.idle_list.append(pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "player", "idle", "idle_5.png")))
-        self.idle_index = 0
-        self.idle_animation_speed = 0.05
-
-        self.width = 100
-        self.height = 100
-
-        self.health = 5
-
-        self.dx = 5
-        self.dy = 5
-
-        self.accerleration = 7
-
-        self.flipped = False
-
-        self.space_down = False
-
-
-        self.image = pg.transform.scale(self.idle_list[self.idle_index], (self.width, self.height))
-        self.rect = self.image.get_rect(center = (WIDTH//2, HEIGHT//2))
 
     def idle_animation(self):
         if self.flipped == False:
@@ -112,23 +75,67 @@ class Player(pg.sprite.Sprite):
                 self.run_index = 0
             self.image = (pg.transform.scale(self.run_list[int(self.run_index)], (self.width, self.height)))
 
+    def __init__(self):
+        super().__init__()
+        self.run_list = []
+        self.run_list.append(pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "player", "run", "run_1.png")))
+        self.run_list.append(pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "player", "run", "run_2.png")))
+        self.run_list.append(pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "player", "run", "run_3.png")))
+        self.run_list.append(pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "player", "run", "run_4.png")))
+        self.run_list.append(pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "player", "run", "run_5.png")))
+        self.run_index = 0
+        self.run_animation_speed = 0.1
+
+        self.idle_list = []
+        self.idle_list.append(pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "player", "idle", "idle_1.png")))
+        self.idle_list.append(pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "player", "idle", "idle_2.png")))
+        self.idle_list.append(pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "player", "idle", "idle_3.png")))
+        self.idle_list.append(pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "player", "idle", "idle_4.png")))
+        self.idle_list.append(pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "player", "idle", "idle_5.png")))
+        self.idle_index = 0
+        self.idle_animation_speed = 0.05
+
+        self.width = 100
+        self.height = 100
+
+        self.health = 5
+
+        self.dx = 0
+        self.dy = 0
+
+        self.accerleration = 7
+
+        self.flipped = False
+
+        self.space_down = False
+
+
+        self.image = pg.transform.scale(self.idle_list[self.idle_index], (self.width, self.height))
+        self.rect = self.image.get_rect(center = (WIDTH//2, HEIGHT//2))
+
     def movement(self):
+        self.dx = 0
+        self.dy = 0
+
         key = pg.key.get_pressed()
         if key[pg.K_d]:
-            self.rect.x += self.accerleration
+            self.dx += 7
         if key[pg.K_a]:
-            self.rect.x-= self.accerleration
+            self.dx -= self.accerleration
         if key[pg.K_w]:
-            self.rect.y -= self.accerleration
+            self.dy -= self.accerleration
         if key[pg.K_s]:
-            self.rect.y += self.accerleration
+            self.dy += self.accerleration
+
+        self.rect.x += self.dx
+        self.rect.y += self.dy
 
     def collision_with_tiles(self):
         for tile in level.tile_list:    
             if tile[1].colliderect(self.rect.x + self.dx, self.rect.y, self.width, self.height):
-                self.accerleration = 0
+                self.dx = 0
             if tile[1].colliderect(self.rect.x, self.rect.y + self.dy, self.width, self.height):
-                self.accerleration = 0
+                self.dy = 0
 
     def border(self):
         if self.rect.left <= 0:
