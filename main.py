@@ -6,8 +6,8 @@ import bullet
 import level
 import crosshair
 import crosshair_picture
+import health_bar
 
-#TODO: implement life bar
 #TODO: make logic for level switching
 #TODO: implement enemys 
 
@@ -35,6 +35,8 @@ while True:
 
     bullet.bullet_group.draw(settings.screen)
     bullet.bullet_group.update()
+
+    health_bar.health_bar.update()
 
     pg.display.update()
     settings.clock.tick(settings.FPS)
