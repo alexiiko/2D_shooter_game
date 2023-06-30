@@ -3,6 +3,7 @@ import os
 import settings
 import bullet
 import level
+import events
 
 class Player(pg.sprite.Sprite):
     def idle_animation(self):
@@ -131,7 +132,15 @@ class Player(pg.sprite.Sprite):
                 bullet.bullet_group.add(bullet.Bullet(self.rect.midleft, self.flipped))
             self.space_down = False
 
+    def loose_health(self):
+        # only temporary key for testing; gonna change that for collision with something
+        key = pg.key.get_pressed()
+        if key[pg.K_k]:
+            event = pg.event.Event(events.LOOSE_HEALTH)
+            pg.event.post(event)
+
     def update(self):
+        self.loose_health()
         self.shoot()
         self.idle_animation()
         self.run_animation() 
