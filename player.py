@@ -1,9 +1,9 @@
 import pygame as pg
 import os 
-import settings
-import bullet
-import level
-import events
+from settings import *
+from bullet import *
+from level import *
+from events import *
 
 class Player(pg.sprite.Sprite):
     def idle_animation(self):
@@ -112,7 +112,7 @@ class Player(pg.sprite.Sprite):
             self.dy += self.accerleration
 
     def collision_with_tiles(self):
-        for tile in level.level.tile_list:
+        for tile in level.tile_list:
             if tile[1].colliderect(self.rect.x + self.dx, self.rect.y, self.width, self.height):
                 self.dx = 0
             if tile[1].colliderect(self.rect.x, self.rect.y + self.dy, self.width, self.height):
@@ -127,16 +127,16 @@ class Player(pg.sprite.Sprite):
             self.space_down = True
         elif self.space_down:
             if not self.flipped:
-                bullet.bullet_group.add(bullet.Bullet(self.rect.midright, self.flipped))
+                bullet_group.add(Bullet(self.rect.midright, self.flipped))
             else:
-                bullet.bullet_group.add(bullet.Bullet(self.rect.midleft, self.flipped))
+                bullet_group.add(Bullet(self.rect.midleft, self.flipped))
             self.space_down = False
 
     def loose_health(self):
         # only temporary key for testing; gonna change that for collision with something
         key = pg.key.get_pressed()
         if key[pg.K_k]:
-            event = pg.event.Event(events.LOOSE_HEALTH)
+            event = pg.event.Event(LOOSE_HEALTH)
             pg.event.post(event)
 
     def update(self):

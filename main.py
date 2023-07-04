@@ -1,45 +1,61 @@
 import pygame as pg
 from sys import exit
-import settings
-import player
-import bullet
-import level
-import crosshair
-import crosshair_picture
-import health_bar
-import events
 
-#TODO: make logic for level switching
-#TODO: implement enemys 
+from settings import *
+from player import *
+from bullet import *
+from level import *
+from crosshair import *
+from crosshair_picture import *
+from health_bar import *
+from events import *
 
-while True:
-    for event in pg.event.get():
-        if event.type == pg.QUIT:
-            pg.quit()
-            exit()
-        if event.type == pg.KEYDOWN:
-            if event.key == pg.K_ESCAPE:
+#TODO: make enemy class
+
+class Game():
+    def __init__(self):
+        pg.init()
+        
+    def update(self):
+        pg.display.update()
+        clock.tick(FPS)
+
+    def draw_window(self):
+        screen.fill("#6584AA")
+
+        level.draw_tiles()
+
+        player.draw(settings.screen)
+        player.update()
+
+        crosshair.draw(settings.screen)
+        crosshair.update()
+        crosshair_picture.draw(settings.screen)
+        crosshair_picture.update()
+
+        bullet_group.draw(settings.screen)
+        bullet_group.update()
+
+        health_bar.draw()
+    
+    def check_events(self):
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
                 pg.quit()
-                exit()     
-        if event.type == events.LOOSE_HEALTH:
-            health_bar.health_bar.update_life()    
+                exit()
+            if event.type == pg.KEYDOWN:
+                if event.key == pg.K_ESCAPE:
+                    pg.quit()
+                    exit()     
+            if event.type == LOOSE_HEALTH:
+                health_bar.update_life()    
+    
+    def run(self):
+        while True:
+            self.check_events()
+            self.draw_window()
+            self.update()
 
-    settings.screen.fill("#6584AA")
-
-    level.level.draw_tiles()
-
-    player.player.draw(settings.screen)
-    player.player.update()
-
-    crosshair.crosshair.draw(settings.screen)
-    crosshair.crosshair.update()
-    crosshair_picture.crosshair_picture.draw(settings.screen)
-    crosshair_picture.crosshair_picture.update()
-
-    bullet.bullet_group.draw(settings.screen)
-    bullet.bullet_group.update()
-
-    health_bar.health_bar.draw()
-
-    pg.display.update()
-    settings.clock.tick(settings.FPS)
+if __name__ == "__main__":
+    game = Game()
+    game.run()
