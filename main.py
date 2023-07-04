@@ -11,7 +11,7 @@ from health_bar import *
 from events import *
 from enemy import *
 
-#TODO: make enemy class
+#TODO: implement left over functions in enemy class
 
 class Game():
     def __init__(self):
