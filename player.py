@@ -61,21 +61,11 @@ class Player(pg.sprite.Sprite):
 
     def __init__(self):
         super().__init__()
-        self.run_list = []
-        self.run_list.append(pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "player", "run", "run_1.png")))
-        self.run_list.append(pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "player", "run", "run_2.png")))
-        self.run_list.append(pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "player", "run", "run_3.png")))
-        self.run_list.append(pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "player", "run", "run_4.png")))
-        self.run_list.append(pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "player", "run", "run_5.png")))
+        self.run_list = [pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "player", "run", f"run_{i}.png")) for i in range(6)]
         self.run_index = 0
         self.run_animation_speed = 0.1
 
-        self.idle_list = []
-        self.idle_list.append(pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "player", "idle", "idle_1.png")))
-        self.idle_list.append(pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "player", "idle", "idle_2.png")))
-        self.idle_list.append(pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "player", "idle", "idle_3.png")))
-        self.idle_list.append(pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "player", "idle", "idle_4.png")))
-        self.idle_list.append(pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "player", "idle", "idle_5.png")))
+        self.idle_list = [pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "player", "idle", f"idle_{i}.png")) for i in range(5)]
         self.idle_index = 0
         self.idle_animation_speed = 0.05
 
@@ -92,7 +82,6 @@ class Player(pg.sprite.Sprite):
         self.flipped = False
 
         self.space_down = False
-
 
         self.image = pg.transform.scale(self.idle_list[self.idle_index], (self.width, self.height))
         self.rect = self.image.get_rect(center = (settings.WIDTH//2, settings.HEIGHT//2))
