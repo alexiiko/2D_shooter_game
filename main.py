@@ -9,6 +9,7 @@ from crosshair import *
 from crosshair_picture import *
 from health_bar import *
 from events import *
+from enemy import *
 
 #TODO: make enemy class
 
@@ -25,15 +26,18 @@ class Game():
 
         level.draw_tiles()
 
-        player.draw(settings.screen)
+        player.draw(screen)
         player.update()
 
-        crosshair.draw(settings.screen)
+        enemy_group.draw(screen)
+        enemy_group.update()
+
+        crosshair.draw(screen)
         crosshair.update()
-        crosshair_picture.draw(settings.screen)
+        crosshair_picture.draw(screen)
         crosshair_picture.update()
 
-        bullet_group.draw(settings.screen)
+        bullet_group.draw(screen)
         bullet_group.update()
 
         health_bar.draw()

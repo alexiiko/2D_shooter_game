@@ -15,6 +15,8 @@ class Bullet(pg.sprite.Sprite):
 
         self.direction = player_flipped
 
+        self.damage = 1
+
     def move(self):
         if self.direction == False:
             self.rect.x += self.bullet_speed    
