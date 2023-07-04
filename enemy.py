@@ -8,7 +8,7 @@ class Enemy(pg.sprite.Sprite):
         self.walk_index = 0
         self.walk_speed = 0.2
 
-        self.idle = [pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "enemy", "idle", f"walk_{j}.png")) for j in range(5)]
+        self.idle = [pg.image.load(os.path.join("OneDrive", "Desktop", "shooter_game", "assets", "enemy", "idle", f"idle_{j}.png")) for j in range(5)]
         self.idle_index = 0
         self.idle_speed = 0.2
 
